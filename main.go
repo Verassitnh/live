@@ -27,8 +27,6 @@ func main() {
 	dir, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
-	}
-
 	chann := make(chan fsnotify.Event)
 
 	go fswatch.Watch(dir, true, chann)
