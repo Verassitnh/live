@@ -1,0 +1,20 @@
+[exclude]
+.git
+go.mod
+go.sum
+
+[include]
+/**/.*/
+
+[script:dev]
+go run **/*.go
+
+[script:test]
+go run **/*_test.go
+
+[nowatch:script:publish]
+git checkout -b gh-pages
+go build -o ./bin/server
+git add -a
+git commit -m "Publish Site"
+git push origin/gh-pages

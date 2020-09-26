@@ -1,20 +1,11 @@
 package watcher
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 
 	"github.com/fsnotify/fsnotify"
 )
-
-// type FSWatcherEvent struct {
-// 	RelativePath string
-// 	Path         string
-// 	FileName     string
-// 	EventName    string
-// 	Time         string
-// }
 
 func Watch(dir string, recursive bool, channel chan fsnotify.Event) {
 
@@ -48,6 +39,10 @@ func Watch(dir string, recursive bool, channel chan fsnotify.Event) {
 
 	// Add files
 	if recursive == true {
+		err = watcher.Add(dir)
+		if err != nil {
+			log.Fatal(err)
+		}
 		recAddFiles(dir, watcher)
 	} else {
 		err := watcher.Add(dir)
@@ -65,23 +60,16 @@ func recAddFiles(dir string, watcher *fsnotify.Watcher) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = watcher.Add(dir)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	for _, file := range files {
 
 		if file.IsDir() {
-			recAddFiles(dir+"/"+file.Name(), watcher)
-			err := watcher.Add(file.Name())
+			err := watcher.Add(dir + "/" + file.Name())
 			if err != nil {
-				log.Fatalf("FAILED ADDING FOLDER: \"%s/%s\" WITH: %s", dir, file.Name(), err)
+				log.Printf("FAILED ADDING FOLDER: \"%s/%s\"! ERROR: %s", dir, file.Name(), err)
 			}
-			fmt.Println("Added Folder:", file.Name())
+			recAddFiles(dir+"/"+file.Name(), watcher)
 		}
-		fmt.Println("Skipping File:", file.Name())
-
 	}
 
 }
