@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -13,6 +14,8 @@ func main() {
 		log.Fatal(err)
 	}
 	sett.GetSettings(dir, ".liverc")
+	fmt.Println("Hello World!")
+
 	// NOTE: This is commented out to test sett.GetSettings()
 
 	// fmt.Print("What command would you like to run?\nEnter text: ")

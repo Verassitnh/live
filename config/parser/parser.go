@@ -1,57 +1,46 @@
-package parser
+package main
 
 import (
 	"fmt"
+	"log"
+	"regexp"
 	"strings"
 )
 
-type Scripts struct {
-	defaultScript []string
-	scripts       map[string][]string
-}
+func parse(code string) {
+	res := map[string]string{}
+	lines := strings.Split(code, "\n")
+	for index, line := range lines {
 
-type Settings struct {
-	scripts  Scripts
-	includes string
-	excludes []string
-}
-
-func Parse(str string) (settings Settings) {
-
-	keys, values := getValues(str)
-	// TODO: Parse keys and values into Settings{}
-
-	fmt.Println(keys)
-	fmt.Println(values)
-
-	return Settings{}
-}
-
-func getValues(str string) ([]string, [][]string) {
-	keys := [][2]int{}
-	code := strings.Split(str, "")
-	for startIndex, startChar := range code {
-		if startChar == "[" {
-			for index, char := range code[startIndex:] {
-				if char == "]" {
-					keys = append(keys, [2]int{startIndex + 1, startIndex + index})
-					break
-				}
-			}
+		// Ignore whitespace only lines
+		m, err := regexp.MatchString(`^\s*$`, line)
+		if err != nil {
+			log.Fatal(err)
 		}
-	}
-	Keysresult := []string{}
-	for _, element := range keys {
-		Keysresult = append(Keysresult, strings.Join(code[element[0]:element[1]], ""))
-	}
-	Valuesresult := [][]string{}
+		if m {
+			continue
+		}
 
-	for index := range keys {
-		value := strings.Join(code[keys[index-1][1]:keys[index][0]], "")
-		valueArr := strings.Split(value, "\n")
+		if strings.HasPrefix(line, "[") && strings.HasSuffix(code, "]") {
+			parseKey(line)
+		}
 
-		Valuesresult = append(Valuesresult, valueArr)
+		fmt.Println(index, line, res)
 	}
+}
 
-	return Keysresult, Valuesresult
+func parseKey(line string) string {
+	var bracketless = strings.TrimSuffix(strings.TrimPrefix(line, "["), "]")
+	regex := regexp.MustCompile(`[^a-zA-Z0-9:_\-]`)
+	var junkless = regex.ReplaceAllString(line, "-")
+
+	if len(junkless) > 0 {
+		return junkless
+	} else {
+		log.Fatal("Failed to parse config file: ERROR: Empty keys are invalid")
+	}
+}
+
+func main() {
+	parse("dfgn\ndfgdfgdf\ndfgsdgfd\ndfdfn\nsdfsdfsdfsdfsfdsdf\n\n\n\n\n\nsfdsdfgsdfg\nsfdgdsfgds\nshdfgdfdgds\nsdfgsdfgsdfg\nsfsdfgdsfgn\nfdgdsfgsdfg\ndfgdfsgdf\nsdgdfgfn\n  ")
 }

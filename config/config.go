@@ -1,10 +1,9 @@
 package config
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
-
-	parser "github.com/Verassitnh/live/config/parser"
 )
 
 func GetSettings(dir string, configFileName string) {
@@ -19,7 +18,8 @@ func GetSettings(dir string, configFileName string) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			parser.Parse(string(code))
+			fmt.Println(code)
+			// parser.Parse(string(code))
 		}
 	}
 }

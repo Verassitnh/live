@@ -6,7 +6,7 @@ go.sum
 [include]
 /**/.*/
 
-[script:dev]
+[script dev]
 go run **/*.go
 
 [script:test]
